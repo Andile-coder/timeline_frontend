@@ -6,26 +6,39 @@ import Select from "react-select";
 import styles from "./NewEventForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
+import { eventsSliceActions } from "../../../../redux/slices/eventSlice";
 const NewEventForm = () => {
+  const dispatch = useDispatch();
+  const offCanvas = useSelector((state) => state.offCanvas.data);
+  const eventsLength = useSelector((state) => state.events.length);
+  const [spinner, setSpinner] = useState(false);
+
   const [eventForm, setEventForm] = useState({
     title: "",
     description: "",
     category_id: "",
-    event_date: Date(),
+    event_date: new Date().toISOString(),
     imagesUrl: [],
+    id: eventsLength,
   });
+  const [categories, setCategories] = useState([]);
 
-  const dispatch = useDispatch();
-  const offCanvas = useSelector((state) => state.offCanvas.data);
-  const [spinner, setSpinner] = useState(false);
+  const getCategories = async () => {
+    const response = await fetch(
+      `${import.meta.env.VITE_SERVER_DEV_API}api/categories`
+    );
+    const categoryData = await response.json();
+    setCategories(
+      categoryData?.response?.map((category) => {
+        const option = { value: category.category_id, label: category.name };
+        return option;
+      })
+    );
+  };
 
-  const options = [
-    { value: "option1", label: "Option 1" },
-    { value: "option2", label: "Option 2" },
-    { value: "option3", label: "Option 3" },
-    // Add more options as needed
-  ];
-
+  useEffect(() => {
+    getCategories();
+  }, []);
   const handleFormChange = async (event) => {
     const { name, value } = event.target;
     setEventForm((prevState) => ({
@@ -42,41 +55,28 @@ const NewEventForm = () => {
     console.log(eventForm);
 
     dispatch(offCanvasActions.updateData({ data: eventForm }));
-    // setSpinner(true);
-    // try {
-    //   const response = await fetch(`http://localhost:3000/api/timelines`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json ",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //     body: JSON.stringify({ title: "New Timeline" }),
-    //   });
-
-    //   if (response.ok) {
-    //     const data = await response.json();
-    //     console.log("data", data);
-    //   } else {
-    //     console.log(response);
-    //   }
-    // } catch (err) {
-    //   console.error("An error occured", err);
-    // }
-    setSpinner(false);
+    dispatch(eventsSliceActions.addEventData({ event: eventForm }));
   };
 
-  const handleTagChange = (selectedOptions) => {
-    console.log(selectedOptions); // Handle selected options here
+  const handleTagChange = (selectedCategories) => {
+    // Handle selected categories here
+    const tempSelectedCategories = selectedCategories
+      .map((category) => category.value)
+      .toString();
+    setEventForm({
+      ...eventForm,
+      category_id: tempSelectedCategories.toString(),
+    });
   };
 
   return (
     <div className={styles.container}>
-      <div
+      {/* <div
         className={styles.spinner_overlay}
         style={{ display: spinner ? "flex" : "none" }}
       >
         <div className={styles.spinner}></div>
-      </div>
+      </div> */}
       <Form onSubmit={onSubmitEvent}>
         <Form.Group className="mb-3" controlId="event_title">
           <Form.Label>Event Title</Form.Label>
@@ -105,19 +105,23 @@ const NewEventForm = () => {
           <Form.Control
             value={eventForm.event_date}
             onChange={handleFormChange}
-            type="date"
+            type="datetime-local"
             name="event_date"
             placeholder="Event date"
           />
         </Form.Group>
 
-        <Form.Group className="d-flex">
-          <Select isMulti options={options} onChange={handleTagChange} />
-          <Button variant="outline-success">Create</Button>
+        <Form.Group className="mb-3">
+          <Select
+            isMulti
+            options={categories}
+            onChange={handleTagChange}
+            placeholder="Tags"
+          />
         </Form.Group>
 
-        <Form.Group className="me-2">
-          <Button type="submit">Submit</Button>{" "}
+        <Form.Group className="mb-3">
+          <Button type="submit">Save Draft</Button>{" "}
         </Form.Group>
       </Form>
     </div>
