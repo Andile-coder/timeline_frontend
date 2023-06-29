@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "../../../redux/actions/authActions";
+import Notification from "../../components/notification/Notification";
 const Register = () => {
   const [user, setUser] = useState({
     email: "",
@@ -8,6 +11,10 @@ const Register = () => {
     confirmPassword: "",
     username: "",
   });
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const notification = useSelector((state) => state.notification.notification);
 
   const [validPassword, setValidPassword] = useState(true);
   const handleChange = (e) => {
@@ -27,29 +34,21 @@ const Register = () => {
 
     validatePassword();
     if (validPassword) {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_SERVER_DEV_API}register`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(user),
-          }
-        );
-        if (response.ok) {
-          const userData = await response.json();
-          console.log(userData);
-        } else {
-          const err = await response.json();
-          console.log(err);
-        }
-      } catch (err) {
-        console.error(err);
-      }
+      dispatch(registerUser(user));
     }
   };
+
+  useEffect(() => {
+    console.log(notification?.type);
+    if (notification?.type == "success") {
+      navigate("/login");
+    }
+  }, [notification, navigate]);
   return (
     <div>
+      {notification && (
+        <Notification type={notification.type} message={notification.message} />
+      )}
       <Container>
         <Row className="vh-100 d-flex justify-content-center align-items-center">
           <Col md={8} lg={6} xs={12}>

@@ -47,3 +47,49 @@ export const loginUser = (user) => {
     }
   };
 };
+export const registerUser = (user) => {
+  return async (dispatch) => {
+    const registerHandler = async () => {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_DEV_API}register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(user),
+        }
+      );
+      if (response.ok) {
+        const userData = await response.json();
+        dispatch(
+          notificationActions.showNotification({
+            type: "success",
+            message: "Registered  Successfully",
+            open: true,
+          })
+        );
+      } else {
+        dispatch(
+          notificationActions.showNotification({
+            type: "error",
+            message: "Registration Failed",
+            open: true,
+          })
+        );
+      }
+    };
+
+    try {
+      const userData = await registerHandler(user);
+      dispatch(authActions.register());
+    } catch (err) {
+      console.error(err);
+      dispatch(
+        notificationActions.showNotification({
+          type: "error",
+          message: "Registration Failed",
+          open: true,
+        })
+      );
+    }
+  };
+};

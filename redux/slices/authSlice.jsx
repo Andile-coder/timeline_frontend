@@ -15,7 +15,9 @@ const authSlice = createSlice({
       state.isLoggedin = false;
       state.user = null;
     },
-    register() {},
+    register(state, action) {
+      state.isLoggedin = false;
+    },
   },
 });
 
