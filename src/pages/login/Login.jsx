@@ -1,13 +1,27 @@
 import React, { useState } from "react";
 import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { authActions } from "../../../redux/slices/authSlice";
+import { loginUser } from "../../../redux/actions/authActions";
+import Notification from "../../components/notification/Notification";
 const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
-  const handleChange = () => {};
-  const onLogin = (e) => {
-    e.preventDeafult();
+  const dispatch = useDispatch();
+  const notification = useSelector((state) => state.notification.notification);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prevState) => ({ ...prevState, [name]: value }));
+  };
+  const onLogin = async (e) => {
+    e.preventDefault();
+    dispatch(loginUser(user));
   };
   return (
     <div>
+      {notification && (
+        <Notification type={notification.type} message={notification.message} />
+      )}
       <Container>
         <Row className="vh-100 d-flex justify-content-center align-items-center">
           <Col md={8} lg={6} xs={12}>
@@ -15,10 +29,9 @@ const Login = () => {
             <Card className="shadow">
               <Card.Body>
                 <div className="mb-3 mt-md-4">
-                  <h2 className="fw-bold mb-2 text-uppercase ">Brand</h2>
-                  <p className=" mb-5">Please enter your login and password!</p>
+                  <h2 className="fw-bold mb-2 text-uppercase ">Timeline</h2>
                   <div className="mb-3">
-                    <Form>
+                    <Form onSubmit={onLogin}>
                       <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label className="text-center">
                           Email address
@@ -27,6 +40,7 @@ const Login = () => {
                           name="email"
                           type="email"
                           placeholder="Enter email"
+                          onChange={handleChange}
                         />
                       </Form.Group>
 
@@ -39,6 +53,7 @@ const Login = () => {
                           name="password"
                           type="password"
                           placeholder="Password"
+                          onChange={handleChange}
                         />
                       </Form.Group>
                       <Form.Group
@@ -59,10 +74,10 @@ const Login = () => {
                     </Form>
                     <div className="mt-3">
                       <p className="mb-0  text-center">
-                        Don't have an account?{" "}
-                        <a href="{''}" className="text-primary fw-bold">
+                        Don't have an account?
+                        <Link className="text-primary fw-bold" to="/register">
                           Sign Up
-                        </a>
+                        </Link>
                       </p>
                     </div>
                   </div>

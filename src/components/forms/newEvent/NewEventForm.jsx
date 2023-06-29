@@ -29,8 +29,7 @@ const NewEventForm = () => {
     }));
   };
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoiSmFjayIsImVtYWlsIjoiamFja0BleGFtcGxlLmNvbSIsInVzZXJfaWQiOiIxYWJjZjc3YS03YTllLTRmZTUtYjI5ZS1jZjBlZjM1ODJlM2UifSwiaWF0IjoxNjg3OTQ4MTg4LCJleHAiOjE2ODc5NTE3Mjh9.Z1mvJQ_M8ui_jtERIto1y6L4mv12QVYAJzZ0K1MZruU";
+  const token = localStorage.getItem("jwt");
 
   const onSubmitEvent = async (e) => {
     e.preventDefault();
@@ -67,7 +66,7 @@ const NewEventForm = () => {
         className={styles.spinner_overlay}
         style={{ display: spinner ? "flex" : "none" }}
       >
-        <div class={styles.spinner}></div>
+        <div className={styles.spinner}></div>
       </div>
       <Form onSubmit={onSubmitEvent}>
         <Form.Group className="mb-3" controlId="event_title">
