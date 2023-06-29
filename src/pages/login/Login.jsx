@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Button, Row, Container, Card, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { authActions } from "../../../redux/slices/authSlice";
 import { loginUser } from "../../../redux/actions/authActions";
 import Notification from "../../components/notification/Notification";
 const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const notification = useSelector((state) => state.notification.notification);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedin);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevState) => ({ ...prevState, [name]: value }));
   };
+
   const onLogin = async (e) => {
     e.preventDefault();
     dispatch(loginUser(user));
   };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      console.log(isLoggedIn);
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
   return (
     <div>
       {notification && (
