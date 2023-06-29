@@ -37,7 +37,6 @@ const Register = () => {
       dispatch(registerUser(user));
     }
   };
-
   useEffect(() => {
     console.log(notification?.type);
     if (notification?.type == "success") {

@@ -6,11 +6,19 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import { useState } from "react";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import NewEventForm from "../forms/newEvent/NewEventForm";
+import { useDispatch, useSelector } from "react-redux";
+import { offCanvasActions } from "../../../redux/slices/offCanvasSlice";
 
 function Navigation() {
   const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const dispatch = useDispatch();
+
+  const showOffCanvas = useSelector((state) => state.offCanvas.open);
+  const handleClose = () =>
+    dispatch(offCanvasActions.showOffCanvas({ open: false }));
+
+  const handleShow = () =>
+    dispatch(offCanvasActions.showOffCanvas({ open: true }));
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -34,7 +42,7 @@ function Navigation() {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      <Offcanvas show={show} onHide={handleClose}>
+      <Offcanvas show={showOffCanvas} onHide={handleClose}>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>New Event</Offcanvas.Title>
         </Offcanvas.Header>

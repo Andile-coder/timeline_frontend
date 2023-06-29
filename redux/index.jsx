@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "./slices/authSlice";
-import notification from "./slices/notificationSlice";
+import notificationSlice from "./slices/notificationSlice";
+import offCanvasSlice from "./slices/offCanvasSlice";
 
 const store = configureStore({
   reducer: {
     auth: authSlice.reducer,
-    notification: notification.reducer,
+    notification: notificationSlice.reducer,
+    offCanvas: offCanvasSlice.reducer,
   },
 });
 

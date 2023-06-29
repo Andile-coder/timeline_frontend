@@ -4,14 +4,19 @@ import { Spinner } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Select from "react-select";
 import styles from "./NewEventForm.module.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
 const NewEventForm = () => {
   const [eventForm, setEventForm] = useState({
     title: "",
     description: "",
     category_id: "",
-    event_date: "",
+    event_date: Date(),
+    imagesUrl: [],
   });
 
+  const dispatch = useDispatch();
+  const offCanvas = useSelector((state) => state.offCanvas.data);
   const [spinner, setSpinner] = useState(false);
 
   const options = [
@@ -33,26 +38,30 @@ const NewEventForm = () => {
 
   const onSubmitEvent = async (e) => {
     e.preventDefault();
-    setSpinner(true);
-    try {
-      const response = await fetch(`http://localhost:3000/api/timelines`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json ",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: "New Timeline" }),
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("data", data);
-      } else {
-        console.log(response);
-      }
-    } catch (err) {
-      console.error("An error occured", err);
-    }
+    console.log(eventForm);
+
+    dispatch(offCanvasActions.updateData({ data: eventForm }));
+    // setSpinner(true);
+    // try {
+    //   const response = await fetch(`http://localhost:3000/api/timelines`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json ",
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify({ title: "New Timeline" }),
+    //   });
+
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     console.log("data", data);
+    //   } else {
+    //     console.log(response);
+    //   }
+    // } catch (err) {
+    //   console.error("An error occured", err);
+    // }
     setSpinner(false);
   };
 
@@ -85,13 +94,21 @@ const NewEventForm = () => {
           <Form.Control
             as="textarea"
             rows={7}
+            value={eventForm.description}
+            onChange={handleFormChange}
             name="description"
             placeholder="Enter Description"
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="event_title">
           <Form.Label>Date</Form.Label>
-          <Form.Control type="date" name="date" placeholder="Event date" />
+          <Form.Control
+            value={eventForm.event_date}
+            onChange={handleFormChange}
+            type="date"
+            name="event_date"
+            placeholder="Event date"
+          />
         </Form.Group>
 
         <Form.Group className="d-flex">
