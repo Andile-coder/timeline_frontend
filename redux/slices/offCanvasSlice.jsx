@@ -11,6 +11,7 @@ const offCanvasSlice = createSlice({
       description: "",
       category_id: "",
       imagesUrl: [],
+      timeline_id: "",
     },
   },
   reducers: {

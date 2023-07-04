@@ -5,7 +5,7 @@ const authSlice = createSlice({
   initialState: { isLoggedin: false, isAdmin: false, user: null },
   reducers: {
     currentUser(state, action) {
-      return state.user;
+      state.user = action.payload;
     },
     login(state, action) {
       state.isLoggedin = true;

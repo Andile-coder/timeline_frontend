@@ -93,3 +93,40 @@ export const registerUser = (user) => {
     }
   };
 };
+
+export const currentUser = () => {
+  return async (dispatch) => {
+    const getCurrentUser = async () => {
+      const token = localStorage.getItem("jwt");
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_DEV_API}user`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const userData = await response.json();
+        return userData;
+      } else {
+        dispatch(
+          notificationActions.showNotification({
+            message: "Please Login",
+            type: "warning",
+            open: true,
+          })
+        );
+        return null;
+      }
+    };
+
+    try {
+      const currentUser = await getCurrentUser();
+      dispatch(authActions.currentUser(currentUser));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};

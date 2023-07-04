@@ -1,86 +1,76 @@
-.galaxy {
+.circle-container {
   position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
 }
 
-.planet {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: red;
+.circle {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 40px;
+  height: 40px;
   display: flex;
-
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  background-color: steelblue;
+  border-radius: 50%;
   transform: translate(-50%, -50%);
-  animation: rotation 10s infinite linear;
-  animation-fill-mode: forwards;
-}
-@keyframes orbit {
-  0% {
-    transform: translateX(180px) rotate(0deg);
-  }
-  100% {
-    transform: translateX(180px) rotate(360deg);
-  }
-}
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
-.planet:nth-child(1) {
-  transform-origin: 70px 0;
-  animation-delay: 0s;
+/* Tooltip text */
+.tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
 }
 
-.planet:nth-child(2) {
-  transform-origin: 70px 0;
-  animation-delay: 1s;
+/* Show the tooltip text when you mouse over the tooltip container */
+.circle:hover .tooltiptext {
+  visibility: visible;
+  left: 20%;
 }
 
-.planet:nth-child(3) {
-  transform-origin: 70px 0;
-  animation-delay: 2s;
+.circle:nth-child(1) {
+  transform: rotate(0deg) translate(60px) rotate(0deg);
 }
 
-.planet:nth-child(4) {
-  transform-origin: 70px 0;
-  animation-delay: 3s;
+.circle:nth-child(2) {
+  transform: rotate(36deg) translate(60px) rotate(-36deg);
 }
 
-.planet:nth-child(5) {
-  transform-origin: 70px 0;
-  animation-delay: 4s;
+.circle:nth-child(3) {
+  transform: rotate(72deg) translate(60px) rotate(-72deg);
 }
 
-.planet:nth-child(6) {
-  transform-origin: 70px 0;
-  animation-delay: 5s;
+.circle:nth-child(4) {
+  transform: rotate(108deg) translate(60px) rotate(-108deg);
 }
 
-.planet:nth-child(7) {
-  transform-origin: 70px 0;
-  animation-delay: 6s;
+.circle:nth-child(5) {
+  transform: rotate(144deg) translate(60px) rotate(-144deg);
+}
+.circle:nth-child(6) {
+  transform: rotate(180deg) translate(60px) rotate(-180deg);
+}
+.circle:nth-child(7) {
+  transform: rotate(216deg) translate(60px) rotate(-216deg);
+}
+.circle:nth-child(8) {
+  transform: rotate(252deg) translate(60px) rotate(-252deg);
+}
+.circle:nth-child(9) {
+  transform: rotate(288deg) translate(60px) rotate(-288deg);
 }
 
-.planet:nth-child(8) {
-  transform-origin: 70px 0;
-  animation-delay: 7s;
-}
-
-.planet:nth-child(9) {
-  transform-origin: 70px 0;
-  animation-delay: 8s;
-}
-
-.planet:nth-child(10) {
-  transform-origin: 70px 0;
-  animation-delay: 9s;
+.circle:nth-child(10) {
+  transform: rotate(324deg) translate(60px) rotate(-360deg);
 }

@@ -5,12 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { authActions } from "../../../redux/slices/authSlice";
 import { loginUser } from "../../../redux/actions/authActions";
 import Notification from "../../components/notification/Notification";
+import Loader from "../../components/loader/Loader";
 const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const notification = useSelector((state) => state.notification.notification);
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedin);
+  const userLoggedin = useSelector((state) => state.auth.user);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,16 +24,17 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
-      console.log(isLoggedIn);
+    if (userLoggedin) {
+      console.log(userLoggedin);
       navigate("/");
     }
-  }, [isLoggedIn, navigate]);
+  }, [userLoggedin, navigate]);
   return (
     <div>
       {notification && (
         <Notification type={notification.type} message={notification.message} />
       )}
+      <Loader />
       <Container>
         <Row className="vh-100 d-flex justify-content-center align-items-center">
           <Col md={8} lg={6} xs={12}>

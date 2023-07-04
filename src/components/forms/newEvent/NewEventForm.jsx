@@ -7,6 +7,7 @@ import styles from "./NewEventForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
 import { eventsSliceActions } from "../../../../redux/slices/eventSlice";
+import Loader from "../../loader/Loader";
 const NewEventForm = () => {
   const dispatch = useDispatch();
   const offCanvas = useSelector((state) => state.offCanvas.data);
@@ -17,9 +18,11 @@ const NewEventForm = () => {
     title: "",
     description: "",
     category_id: "",
-    event_date: new Date().toISOString(),
+    event_date: new Date(),
+    y_axis: 10,
     imagesUrl: [],
     id: eventsLength,
+    timeline_id: "",
   });
   const [categories, setCategories] = useState([]);
 
@@ -45,11 +48,11 @@ const NewEventForm = () => {
       ...prevState,
       [name]: value,
     }));
+
+    console.log(eventForm);
   };
 
-  const token = localStorage.getItem("jwt");
-
-  const onSubmitEvent = async (e) => {
+  const onSubmitDraft = async (e) => {
     e.preventDefault();
 
     console.log(eventForm);
@@ -71,13 +74,7 @@ const NewEventForm = () => {
 
   return (
     <div className={styles.container}>
-      {/* <div
-        className={styles.spinner_overlay}
-        style={{ display: spinner ? "flex" : "none" }}
-      >
-        <div className={styles.spinner}></div>
-      </div> */}
-      <Form onSubmit={onSubmitEvent}>
+      <Form onSubmit={onSubmitDraft}>
         <Form.Group className="mb-3" controlId="event_title">
           <Form.Label>Event Title</Form.Label>
           <Form.Control

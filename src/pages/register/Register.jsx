@@ -38,7 +38,6 @@ const Register = () => {
     }
   };
   useEffect(() => {
-    console.log(notification?.type);
     if (notification?.type == "success") {
       navigate("/login");
     }

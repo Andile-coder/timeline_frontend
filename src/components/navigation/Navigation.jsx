@@ -3,15 +3,22 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import NewEventForm from "../forms/newEvent/NewEventForm";
 import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../redux/slices/offCanvasSlice";
+import { authActions } from "../../../redux/slices/authSlice";
+import { currentUser } from "../../../redux/actions/authActions";
+import { useNavigate } from "react-router-dom";
+import { timelineActions } from "../../../redux/slices/timelineSlice";
+import { createTimeline } from "../../../redux/actions/timelineActions";
 
 function Navigation() {
   const [show, setShow] = useState(false);
+  const userLoggedin = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const naviagate = useNavigate();
 
   const showOffCanvas = useSelector((state) => state.offCanvas.open);
   const handleClose = () =>
@@ -19,11 +26,29 @@ function Navigation() {
 
   const handleShow = () =>
     dispatch(offCanvasActions.showOffCanvas({ open: true }));
+
+  const handleSave = () => {
+    dispatch(currentUser());
+    if (!userLoggedin || userLoggedin === {}) {
+      naviagate("/login");
+    } else {
+      //create a timeline
+      console.log("logged in", userLoggedin);
+
+      dispatch(timelineActions.showModal(true));
+      //add events to timeline
+    }
+  };
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
         <Navbar.Brand href="#home">Timeline</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Button variant="secondary" onClick={handleSave}>
+          Save
+        </Button>
+
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Button onClick={handleShow}>+ New Event</Button>
@@ -55,50 +80,3 @@ function Navigation() {
 }
 
 export default Navigation;
-{
-  /* <Offcanvas show={show} onHide={handleClose}>
-<Offcanvas.Header closeButton>
-  <Offcanvas.Title>New Event</Offcanvas.Title>
-</Offcanvas.Header>
-<Offcanvas.Body>
-  <NewEventForm />
-</Offcanvas.Body>
-</Offcanvas> */
-}
-{
-  /* <Navbar expand="lg" className="bg-body-tertiary">
-<Container>
-  <Navbar.Brand href="#">Timeline</Navbar.Brand>
-  <Navbar.Toggle aria-controls="basic-navbar-nav" />
-  <Navbar.Collapse id="navbarScroll">
-    <Nav className="me-auto" style={{ maxHeight: "100px" }}>
-      <Button onClick={handleShow}>+ New Event</Button>
-      <Nav.Link href="#action1">Home</Nav.Link>
-      <Nav.Link href="#action2">Public Timelines</Nav.Link>
-      <Nav.Link href="#action2">Library</Nav.Link>
-      <Nav.Link href="#action2">Faq</Nav.Link>
-      <Nav.Link href="#action2">Contact us</Nav.Link>
-      <NavDropdown title="John Doe" id="navbarScrollingDropdown">
-        <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-        <NavDropdown.Item href="#action4">
-          Another action
-        </NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item href="#action5">
-          Something else here
-        </NavDropdown.Item>
-      </NavDropdown>
-    </Nav>
-    <Form className="d-flex">
-      <Form.Control
-        type="search"
-        placeholder="Search"
-        className="me-2"
-        aria-label="Search"
-      />
-      <Button variant="outline-success">Search</Button>
-    </Form>
-  </Navbar.Collapse>
-</Container>
-</Navbar> */
-}
