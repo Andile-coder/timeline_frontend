@@ -5,14 +5,23 @@ const eventsSlice = createSlice({
   initialState: {
     events: [],
     length: 0,
+    timeline_id: "",
   },
   reducers: {
     addEventData(state, action) {
       state.events.push(action.payload.event);
       state.length = state.events.length;
     },
+    addTimelineId(state, action) {
+      if (state.events.length !== 0) {
+        state.events = state.events.map((event) => ({
+          ...event,
+          timeline_id: action.payload.timeline_id,
+        }));
+      }
+    },
   },
 });
 
-export const eventsSliceActions = eventsSlice.actions;
+export const eventActions = eventsSlice.actions;
 export default eventsSlice;

@@ -28,17 +28,19 @@ function Navigation() {
     dispatch(offCanvasActions.showOffCanvas({ open: true }));
 
   const handleSave = () => {
-    dispatch(currentUser());
     if (!userLoggedin || userLoggedin === {}) {
       naviagate("/login");
     } else {
       //create a timeline
-      console.log("logged in", userLoggedin);
 
       dispatch(timelineActions.showModal(true));
       //add events to timeline
     }
   };
+
+  useEffect(() => {
+    dispatch(currentUser());
+  }, []);
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary">

@@ -113,7 +113,7 @@ export const currentUser = () => {
       } else {
         dispatch(
           notificationActions.showNotification({
-            message: "Please Login",
+            message: "User not signed in",
             type: "warning",
             open: true,
           })

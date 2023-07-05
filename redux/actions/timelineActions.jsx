@@ -1,6 +1,8 @@
 import { loaderActions } from "../slices/loader";
 import { timelineActions } from "../slices/timelineSlice";
 import { notificationActions } from "../slices/notificationSlice";
+import { eventActions } from "../slices/eventSlice";
+
 export const createTimeline = (data) => {
   return async (dispatch) => {
     dispatch(loaderActions.showLoader(true)); //activate loader
@@ -28,12 +30,18 @@ export const createTimeline = (data) => {
             open: true,
           })
         );
+        dispatch(
+          eventActions.addTimelineId({
+            timeline_id: timelineData.data.timeline_id,
+          })
+        );
+
         return timelineData;
       } else {
         dispatch(loaderActions.showLoader(false)); //disable loader
         dispatch(
           notificationActions.showNotification({
-            message: "Something went wrong!!",
+            message: "Failed to create timeline!!",
             type: "warning",
             open: true,
           })
@@ -42,13 +50,19 @@ export const createTimeline = (data) => {
     };
     try {
       const timelineData = await createTimelineHandler({ data });
-
       // dispatch(loaderActions.showLoader(false)); //disable loader
-
-      dispatch(timelineActions.createTimeline(timelineData));
+      if (timelineData) {
+        dispatch(timelineActions.createTimeline(timelineData));
+      }
     } catch (error) {
       dispatch(loaderActions.showLoader(false)); //disable loader
       console.error(error);
     }
+  };
+};
+
+export const clearTimelineState = () => {
+  return async (dispatch) => {
+    dispatch(timelineActions.clearState());
   };
 };

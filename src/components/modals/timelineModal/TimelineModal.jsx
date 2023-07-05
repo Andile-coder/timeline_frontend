@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { timelineActions } from "../../../../redux/slices/timelineSlice";
-import { createTimeline } from "../../../../redux/actions/timelineActions";
+import {
+  clearTimelineState,
+  createTimeline,
+} from "../../../../redux/actions/timelineActions";
 import { Form } from "react-bootstrap";
+import { createEvent } from "../../../../redux/actions/eventActions";
+import { useNavigate } from "react-router-dom";
+import { loaderActions } from "../../../../redux/slices/loader";
 
 const TimelineModal = () => {
   const show = useSelector((state) => state.timeline.modal);
@@ -13,6 +19,11 @@ const TimelineModal = () => {
     description: "",
   });
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const events = useSelector((state) => state.events.events);
+  const timeline_id = useSelector(
+    (state) => state.timeline.timelines[0]?.data.timeline_id
+  );
   const handleClose = () => {
     //create timeline
     dispatch(timelineActions.showModal(false));
@@ -20,9 +31,8 @@ const TimelineModal = () => {
 
   const timelineHandler = async (e) => {
     e.preventDefault();
-    console.log("submit");
-    dispatch(createTimeline(timelineForm));
-    dispatch(timelineActions.showModal(false));
+    dispatch(createTimeline(timelineForm)); //create timeline which updates timeline_id of events
+    dispatch(timelineActions.showModal(false)); //close modal
   };
 
   const handleFormChange = async (event) => {
@@ -31,9 +41,21 @@ const TimelineModal = () => {
       ...prevState,
       [name]: value,
     }));
-
-    console.log(timelineForm);
   };
+  useEffect(() => {
+    if (events.length !== 0 && events[0].timeline_id !== "") {
+      //only render once all events have timeline_id
+      events.forEach((event) => dispatch(createEvent(event)));
+      dispatch(loaderActions.showLoader(true));
+      const navTimeout = setTimeout(() => {
+        navigate(`/my/timeline/${timeline_id}`);
+        dispatch(loaderActions.showLoader(false));
+        dispatch(clearTimelineState());
+      }, 5000);
+
+      clearTimeout(navTimeout);
+    }
+  }, [events, timeline_id]);
 
   return (
     <>
@@ -51,6 +73,7 @@ const TimelineModal = () => {
                 name="title"
                 value={timelineForm.title}
                 onChange={handleFormChange}
+                required
               />
             </Form.Group>
 
@@ -62,7 +85,7 @@ const TimelineModal = () => {
                 value={timelineForm.description}
                 onChange={handleFormChange}
                 name="description"
-                placeholder="Enter Description"
+                placeholder="Enter Description (Optional)"
               />
             </Form.Group>
 

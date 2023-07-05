@@ -6,7 +6,7 @@ import Select from "react-select";
 import styles from "./NewEventForm.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
-import { eventsSliceActions } from "../../../../redux/slices/eventSlice";
+import { eventActions } from "../../../../redux/slices/eventSlice";
 import Loader from "../../loader/Loader";
 const NewEventForm = () => {
   const dispatch = useDispatch();
@@ -48,17 +48,13 @@ const NewEventForm = () => {
       ...prevState,
       [name]: value,
     }));
-
-    console.log(eventForm);
   };
 
   const onSubmitDraft = async (e) => {
     e.preventDefault();
 
-    console.log(eventForm);
-
     dispatch(offCanvasActions.updateData({ data: eventForm }));
-    dispatch(eventsSliceActions.addEventData({ event: eventForm }));
+    dispatch(eventActions.addEventData({ event: eventForm }));
   };
 
   const handleTagChange = (selectedCategories) => {
@@ -83,6 +79,7 @@ const NewEventForm = () => {
             name="title"
             value={eventForm.title}
             onChange={handleFormChange}
+            required
           />
         </Form.Group>
 
@@ -94,7 +91,7 @@ const NewEventForm = () => {
             value={eventForm.description}
             onChange={handleFormChange}
             name="description"
-            placeholder="Enter Description"
+            placeholder="Enter Description (Optional)"
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="event_title">
@@ -105,6 +102,7 @@ const NewEventForm = () => {
             type="datetime-local"
             name="event_date"
             placeholder="Event date"
+            required
           />
         </Form.Group>
 
@@ -113,7 +111,7 @@ const NewEventForm = () => {
             isMulti
             options={categories}
             onChange={handleTagChange}
-            placeholder="Tags"
+            placeholder="Tags (Optional)"
           />
         </Form.Group>
 

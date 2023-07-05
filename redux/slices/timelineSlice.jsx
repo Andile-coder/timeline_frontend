@@ -16,6 +16,10 @@ const timelineSlice = createSlice({
     showModal(state, action) {
       state.modal = action.payload;
     },
+    clearState(state, action) {
+      state.timelines = [];
+      state.modal = false;
+    },
   },
 });
 
