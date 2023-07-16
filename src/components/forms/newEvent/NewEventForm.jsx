@@ -88,6 +88,7 @@ const NewEventForm = () => {
             as="textarea"
             rows={7}
             value={eventForm.description}
+            required
             onChange={handleFormChange}
             name="description"
             placeholder="Enter Description (Optional)"

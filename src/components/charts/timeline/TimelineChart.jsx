@@ -13,31 +13,43 @@ import {
   zoomTransform,
 } from "d3";
 import Chooser from "../../chooser/Chooser";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
 
 const TimelineChart = (props) => {
   const ref = useRef();
   const dispatch = useDispatch();
   const [currentZoomState, setCurrentZoomState] = useState();
-  const [clickedDate, setClickedDate] = useState(null);
+  const [clickedDate, setClickedDate] = useState({ x: null, y: null });
   const [coordinates, setCoordinates] = useState({ tempx: 0, tempy: 0 });
-  const data = [
+
+  const events = useSelector((state) => state.events.events);
+
+  let data = [
     // { x: new Date("2023-04-01"), y: 25 },
     // { x: new Date("2023-05-01"), y: 30 },
-    // {
-    //   x: new Date(
-    //     "Wed Oct 13 2156 05:18:41 GMT+0200 (South Africa Standard Time)"
-    //   ),
-    //   y: 25,
-    // },
+    {
+      x: new Date(
+        "Wed Jul 21 2023 21:30:41 GMT+0200 (South Africa Standard Time)"
+      ),
+      y: 2,
+    },
     { x: new Date("2023-07-21T21:37"), y: 1 },
   ];
+  useEffect(() => {
+    data = events.map((event) => ({
+      x: new Date(event.event_date),
+      y: event.y_axis,
+    }));
+
+    console.log("data", data);
+  });
+
   let width = ref.current?.parentElement?.clientWidth || 2000;
   const height = 500 || 0;
   const marginBottom = 30;
 
-  const handleGraphClick = (svg, ref, xScale) => {
+  const handleGraphClick = (svg, ref, xScale, yScale) => {
     svg.on("click", (event) => {
       const svgNode = ref.current;
       if (svgNode) {
@@ -45,12 +57,27 @@ const TimelineChart = (props) => {
         const svgRect = svgNode.getBoundingClientRect();
         point.x = event.clientX;
         point.y = event.clientY;
-        const { x } = point.matrixTransform(svgNode.getScreenCTM()?.inverse());
+        const { x, y } = point.matrixTransform(
+          svgNode.getScreenCTM()?.inverse()
+        );
         const newDate = xScale.invert(x);
-        console.log(newDate);
+        const formattedDate = newDate.toISOString().slice(0, 16);
 
-        setClickedDate(newDate);
-        dispatch(offCanvasActions.updateDateEventDate("2023-07-15T21:04"));
+        const y_coordinate = yScale.invert(y);
+
+        //format date to suit html input date type
+
+        //update clicked date
+        setClickedDate({ x: newDate, y: y_coordinate });
+        //update offcanvas coordinates
+        dispatch(
+          offCanvasActions.updateEventCoordinates({
+            x: formattedDate,
+            y: y_coordinate,
+          })
+        );
+
+        //create circle to show when you click
         const circle = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "circle"
@@ -59,7 +86,7 @@ const TimelineChart = (props) => {
         const tempx = event.clientX - svgRect.left;
         const tempy = event.clientY - svgRect.top;
 
-        //screen coordinates not exact user values
+        //adjust where the user click to match the graph coordinates
         setCoordinates({
           tempx: tempx + window.screenX,
           tempy: tempy + window.screenY,
@@ -71,7 +98,8 @@ const TimelineChart = (props) => {
         circle.setAttribute("fill", "red");
 
         // Append the circle to the SVG element
-        svgNode.appendChild(circle);
+        //uncomment  line below to see circle where user clicked
+        // svgNode.appendChild(circle);
       }
       dispatch(offCanvasActions.showOffCanvas({ open: true }));
     });
@@ -79,12 +107,14 @@ const TimelineChart = (props) => {
 
   useEffect(() => {
     const xScale = scaleUtc()
-      .domain([new Date("1900-01-01"), new Date("2100-01-01")])
+      .domain([new Date("2000-01-01"), new Date("2030-01-01")])
       .range([0, width]);
 
     const yScale = scaleLinear()
-      .domain([0, max(data.map((date) => date.y))])
+      .domain([0, 100])
       .range([height - 10, 10]);
+    // max(data.map((date) => date.y))
+
     // Declare the x (horizontal position) scale.
     const svg = select(ref.current)
       .attr("width", "100%")
@@ -97,7 +127,7 @@ const TimelineChart = (props) => {
 
     circles.attr("cx", (d) => xScale(d.x)).attr("cy", (d) => yScale(d.y));
 
-    handleGraphClick(svg, ref, xScale);
+    handleGraphClick(svg, ref, xScale, yScale);
 
     if (currentZoomState) {
       const newXScale = currentZoomState.rescaleX(xScale);
@@ -109,12 +139,42 @@ const TimelineChart = (props) => {
     svg
       .selectAll(".myDot")
       .data(data)
-      .join("circle")
+
+      .join("rect") // Use "rect" instead of "circle"
       .attr("class", "myDot")
-      .attr("r", 4)
+      .attr("width", 20) // Set the desired width for the rectangles
+      .attr("height", 20) // Set the desired height for the rectangles
       .attr("fill", "orange")
-      .attr("cx", (d) => xScale(d.x))
-      .attr("cy", (d) => yScale(d.y));
+      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the rectangle
+      .attr("y", (d) => yScale(d.y));
+
+    // Add text inside the rectangles
+    svg
+      .selectAll(".myDot")
+      .append("text")
+      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the text
+      .attr("y", (d) => yScale(d.y)) // Adjust the y position to center the text
+      .attr("text-anchor", "middle") // Center align the text
+      .attr("dominant-baseline", "middle") // Vertically center align the text
+      .attr("fill", "white")
+      .text("(d) => d.label");
+
+    // .join("circle")
+    // .attr("class", "myDot")
+    // .attr("r", 4)
+    // .attr("fill", "orange")
+    // .attr("cx", (d) => xScale(d.x))
+    // .attr("cy", (d) => yScale(d.y));
+
+    svg
+      .selectAll(".myDot")
+      .append("text")
+      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the text
+      .attr("y", (d) => yScale(d.y)) // Adjust the y position to center the text
+      .text((d) => d.label) // Set the text content
+      .attr("text-anchor", "middle") // Center align the text
+      .attr("dominant-baseline", "middle") // Vertically center align the text
+      .attr("fill", "white"); // Set the text color
 
     svg
       .append("g")

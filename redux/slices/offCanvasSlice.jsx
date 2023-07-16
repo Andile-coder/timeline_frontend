@@ -24,8 +24,9 @@ const offCanvasSlice = createSlice({
     showOffCanvas(state, action) {
       state.open = action.payload.open;
     },
-    updateDateEventDate(state, action) {
-      state.data.event_date = action.payload;
+    updateEventCoordinates(state, action) {
+      state.data.event_date = action.payload.x;
+      state.data.y_axis = action.payload.y;
     },
     resetState(state = initialState, action) {
       return initialState;
