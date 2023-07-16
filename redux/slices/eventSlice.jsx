@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  events: [],
+  length: 0,
+  timeline_id: "",
+  timeline_events: [],
+};
 const eventsSlice = createSlice({
   name: "events",
-  initialState: {
-    events: [],
-    length: 0,
-    timeline_id: "",
-  },
+  initialState: initialState,
   reducers: {
     addEventData(state, action) {
       state.events.push(action.payload.event);
@@ -19,6 +21,12 @@ const eventsSlice = createSlice({
           timeline_id: action.payload.timeline_id,
         }));
       }
+    },
+    addTimelineEvents(state, action) {
+      state.timeline_events = action.payload;
+    },
+    resetState(state = initialState, action) {
+      return initialState;
     },
   },
 });

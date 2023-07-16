@@ -13,17 +13,27 @@ import {
   zoomTransform,
 } from "d3";
 import Chooser from "../../chooser/Chooser";
+import { useDispatch } from "react-redux";
+import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
 
 const TimelineChart = (props) => {
   const ref = useRef();
+  const dispatch = useDispatch();
   const [currentZoomState, setCurrentZoomState] = useState();
   const [clickedDate, setClickedDate] = useState(null);
   const [coordinates, setCoordinates] = useState({ tempx: 0, tempy: 0 });
   const data = [
-    { x: new Date("2023-04-01"), y: 25 },
-    { x: new Date("2023-05-01"), y: 30 },
+    // { x: new Date("2023-04-01"), y: 25 },
+    // { x: new Date("2023-05-01"), y: 30 },
+    // {
+    //   x: new Date(
+    //     "Wed Oct 13 2156 05:18:41 GMT+0200 (South Africa Standard Time)"
+    //   ),
+    //   y: 25,
+    // },
+    { x: new Date("2023-07-21T21:37"), y: 1 },
   ];
-  let width = ref.current?.parentElement?.clientWidth || 1000;
+  let width = ref.current?.parentElement?.clientWidth || 2000;
   const height = 500 || 0;
   const marginBottom = 30;
 
@@ -40,6 +50,7 @@ const TimelineChart = (props) => {
         console.log(newDate);
 
         setClickedDate(newDate);
+        dispatch(offCanvasActions.updateDateEventDate("2023-07-15T21:04"));
         const circle = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "circle"
@@ -62,20 +73,22 @@ const TimelineChart = (props) => {
         // Append the circle to the SVG element
         svgNode.appendChild(circle);
       }
+      dispatch(offCanvasActions.showOffCanvas({ open: true }));
     });
   };
 
-  const xScale = scaleUtc()
-    .domain([new Date("1900-01-01"), new Date("3000-01-01")])
-    .range([0, width]);
-
-  const yScale = scaleLinear()
-    .domain([0, max(data.map((date) => date.y))])
-    .range([height - 10, 10]);
-
   useEffect(() => {
+    const xScale = scaleUtc()
+      .domain([new Date("1900-01-01"), new Date("2100-01-01")])
+      .range([0, width]);
+
+    const yScale = scaleLinear()
+      .domain([0, max(data.map((date) => date.y))])
+      .range([height - 10, 10]);
     // Declare the x (horizontal position) scale.
-    const svg = select(ref.current).attr("width", "60%").attr("height", "100%"); //declare svg
+    const svg = select(ref.current)
+      .attr("width", "100%")
+      .attr("height", "100%"); //declare svg
 
     svg.selectAll(".x-axis").remove(); // Remove existing x-axis elements after zooming
 
@@ -98,7 +111,6 @@ const TimelineChart = (props) => {
       .data(data)
       .join("circle")
       .attr("class", "myDot")
-      .attr("stroke", "black")
       .attr("r", 4)
       .attr("fill", "orange")
       .attr("cx", (d) => xScale(d.x))
@@ -109,7 +121,8 @@ const TimelineChart = (props) => {
       .attr("class", "x-axis") // Add a class to the x-axis group for easy removal
       .attr("transform", `translate(0,${height - marginBottom})`)
       .attr("color", "")
-      .call(axisBottom(xScale).ticks(50))
+      .attr("stroke-width", 2.5)
+      .call(axisBottom(xScale).ticks(30))
       .selectAll(".tick")
       .append("circle")
       .attr("class", "x-axis-dot")
@@ -124,7 +137,7 @@ const TimelineChart = (props) => {
 
     //zoom behaviour
     const zoomBehavior = zoom()
-      .scaleExtent([0, 100])
+      .scaleExtent([10, 10000000])
       .translateExtent([
         [0, 0],
         [width, height],
@@ -164,7 +177,7 @@ const TimelineChart = (props) => {
             top: coordinates.tempy,
           }}
         >
-          <Chooser />
+          {/* <Chooser /> */}
         </div>
       )}
     </div>

@@ -8,22 +8,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
 import { eventActions } from "../../../../redux/slices/eventSlice";
 import Loader from "../../loader/Loader";
+import { notificationActions } from "../../../../redux/slices/notificationSlice";
 const NewEventForm = () => {
   const dispatch = useDispatch();
-  const offCanvas = useSelector((state) => state.offCanvas.data);
+  const offCanvasData = useSelector((state) => state.offCanvas.data);
   const eventsLength = useSelector((state) => state.events.length);
   const [spinner, setSpinner] = useState(false);
-
-  const [eventForm, setEventForm] = useState({
-    title: "",
-    description: "",
-    category_id: "",
-    event_date: new Date(),
-    y_axis: 10,
-    imagesUrl: [],
-    id: eventsLength,
-    timeline_id: "",
-  });
+  const [eventForm, setEventForm] = useState(offCanvasData);
   const [categories, setCategories] = useState([]);
 
   const getCategories = async () => {
@@ -52,9 +43,17 @@ const NewEventForm = () => {
 
   const onSubmitDraft = async (e) => {
     e.preventDefault();
-
     dispatch(offCanvasActions.updateData({ data: eventForm }));
     dispatch(eventActions.addEventData({ event: eventForm }));
+    dispatch(
+      notificationActions.showNotification({
+        type: "success",
+        message: "Event draft saved",
+        open: true,
+      })
+    );
+    //remove offcanvas data after draft
+    dispatch(offCanvasActions.resetState());
   };
 
   const handleTagChange = (selectedCategories) => {

@@ -32,7 +32,6 @@ function Navigation() {
       naviagate("/login");
     } else {
       //create a timeline
-
       dispatch(timelineActions.showModal(true));
       //add events to timeline
     }

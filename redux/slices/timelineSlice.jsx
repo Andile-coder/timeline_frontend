@@ -5,10 +5,14 @@ const timelineSlice = createSlice({
   initialState: {
     timelines: [],
     modal: false,
+    timeline: {},
   },
   reducers: {
-    getTimelines(state, action) {
-      return state.timelines;
+    getTimeline(state, action) {
+      return state.timeline;
+    },
+    addTimeline(state, action) {
+      state.timeline = action.payload;
     },
     createTimeline(state, action) {
       state.timelines.push(action.payload);

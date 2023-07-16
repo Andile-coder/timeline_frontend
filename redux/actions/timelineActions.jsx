@@ -66,3 +66,54 @@ export const clearTimelineState = () => {
     dispatch(timelineActions.clearState());
   };
 };
+export const getTimeline = (timeline_id) => {
+  return async (dispatch) => {
+    const getTimelineHandler = async () => {
+      const token = localStorage.getItem("jwt");
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_DEV_API}api/timelines/${timeline_id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        const timeline = await response.json();
+        dispatch(
+          notificationActions.showNotification({
+            type: "success",
+            message: "timeline received  Successfully",
+            open: true,
+          })
+        );
+        return timeline;
+      } else {
+        dispatch(
+          notificationActions.showNotification({
+            type: "error",
+            message: "Failed to get timeline",
+            open: true,
+          })
+        );
+      }
+    };
+
+    try {
+      const response = await getTimelineHandler(timeline_id);
+      dispatch(timelineActions.addTimeline(response));
+      return response;
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        notificationActions.showNotification({
+          type: "error",
+          message: "An error occured",
+          open: true,
+        })
+      );
+    }
+  };
+};

@@ -2,15 +2,21 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { timelineActions } from "../../../../redux/slices/timelineSlice";
 import {
   clearTimelineState,
   createTimeline,
+  getTimeline,
 } from "../../../../redux/actions/timelineActions";
 import { Form } from "react-bootstrap";
-import { createEvent } from "../../../../redux/actions/eventActions";
+import {
+  createEvent,
+  getTimelineEvents,
+} from "../../../../redux/actions/eventActions";
 import { useNavigate } from "react-router-dom";
 import { loaderActions } from "../../../../redux/slices/loader";
+import { eventActions } from "../../../../redux/slices/eventSlice";
 
 const TimelineModal = () => {
   const show = useSelector((state) => state.timeline.modal);
@@ -20,10 +26,12 @@ const TimelineModal = () => {
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const events = useSelector((state) => state.events.events);
   const timeline_id = useSelector(
     (state) => state.timeline.timelines[0]?.data.timeline_id
   );
+  const loader = useSelector((state) => state.loader.loading);
   const handleClose = () => {
     //create timeline
     dispatch(timelineActions.showModal(false));
@@ -42,19 +50,24 @@ const TimelineModal = () => {
       [name]: value,
     }));
   };
-  useEffect(() => {
-    if (events.length !== 0 && events[0].timeline_id !== "") {
+  const createData = async () => {
+    if (
+      events.length !== 0 &&
+      events[0].timeline_id !== "" &&
+      timeline_id !== undefined
+    ) {
       //only render once all events have timeline_id
-      events.forEach((event) => dispatch(createEvent(event)));
       dispatch(loaderActions.showLoader(true));
-      const navTimeout = setTimeout(() => {
-        navigate(`/my/timeline/${timeline_id}`);
-        dispatch(loaderActions.showLoader(false));
-        dispatch(clearTimelineState());
-      }, 5000);
-
-      clearTimeout(navTimeout);
+      console.log("events length", events.length);
+      await events.forEach((event) => dispatch(createEvent(event)));
+      dispatch(eventActions.resetState());
+      navigate(`/my/timeline/${timeline_id}`, { state: { timeline_id } });
+    } else if (events.length == 0 && timeline_id !== undefined) {
+      navigate(`/my/timeline/${timeline_id}`, { state: { timeline_id } });
     }
+  };
+  useEffect(() => {
+    createData();
   }, [events, timeline_id]);
 
   return (
