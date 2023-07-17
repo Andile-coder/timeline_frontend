@@ -139,49 +139,31 @@ const TimelineChart = (props) => {
     svg
       .selectAll(".myDot")
       .data(data)
-
       .join("rect") // Use "rect" instead of "circle"
       .attr("class", "myDot")
-      .attr("width", 20) // Set the desired width for the rectangles
-      .attr("height", 20) // Set the desired height for the rectangles
-      .attr("fill", "orange")
+      .attr("width", 100) // Set the desired width for the rectangles
+      .attr("height", 40) // Set the desired height for the rectangles
+      .attr("fill", "red")
       .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the rectangle
       .attr("y", (d) => yScale(d.y));
 
-    // Add text inside the rectangles
+    //text on rect
     svg
-      .selectAll(".myDot")
-      .append("text")
-      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the text
-      .attr("y", (d) => yScale(d.y)) // Adjust the y position to center the text
-      .attr("text-anchor", "middle") // Center align the text
-      .attr("dominant-baseline", "middle") // Vertically center align the text
-      .attr("fill", "white")
-      .text("(d) => d.label");
-
-    // .join("circle")
-    // .attr("class", "myDot")
-    // .attr("r", 4)
-    // .attr("fill", "orange")
-    // .attr("cx", (d) => xScale(d.x))
-    // .attr("cy", (d) => yScale(d.y));
-
-    svg
-      .selectAll(".myDot")
-      .append("text")
-      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the text
-      .attr("y", (d) => yScale(d.y)) // Adjust the y position to center the text
-      .text((d) => d.label) // Set the text content
-      .attr("text-anchor", "middle") // Center align the text
-      .attr("dominant-baseline", "middle") // Vertically center align the text
-      .attr("fill", "white"); // Set the text color
+      .selectAll(".myText")
+      .data(data)
+      .join("text")
+      .attr("class", "myText")
+      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the rectangle
+      .attr("y", (d) => yScale(d.y) + 25)
+      .attr("stroke", "#000")
+      .text("event");
 
     svg
       .append("g")
       .attr("class", "x-axis") // Add a class to the x-axis group for easy removal
       .attr("transform", `translate(0,${height - marginBottom})`)
       .attr("color", "")
-      .attr("stroke-width", 2.5)
+      .attr("stroke-width", 3)
       .call(axisBottom(xScale).ticks(30))
       .selectAll(".tick")
       .append("circle")
@@ -197,7 +179,7 @@ const TimelineChart = (props) => {
 
     //zoom behaviour
     const zoomBehavior = zoom()
-      .scaleExtent([10, 10000000])
+      .scaleExtent([1, 700000])
       .translateExtent([
         [0, 0],
         [width, height],
