@@ -10,7 +10,7 @@ const initialState = {
     category_id: "",
     imagesUrl: [],
     timeline_id: "",
-    y_axis: 10,
+    y_axis: 20,
   },
 };
 

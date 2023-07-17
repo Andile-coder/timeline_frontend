@@ -13,8 +13,10 @@ import {
   zoomTransform,
 } from "d3";
 import Chooser from "../../chooser/Chooser";
+import * as d3 from "d3";
 import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
+import EventPoint from "../../eventPoint/EventPoint";
 
 const TimelineChart = (props) => {
   const ref = useRef();
@@ -40,6 +42,7 @@ const TimelineChart = (props) => {
     data = events.map((event) => ({
       x: new Date(event.event_date),
       y: event.y_axis,
+      title: event.title,
     }));
 
     console.log("data", data);
@@ -113,6 +116,7 @@ const TimelineChart = (props) => {
     const yScale = scaleLinear()
       .domain([0, 100])
       .range([height - 10, 10]);
+
     // max(data.map((date) => date.y))
 
     // Declare the x (horizontal position) scale.
@@ -134,29 +138,8 @@ const TimelineChart = (props) => {
       const [start, end] = newXScale.domain();
       xScale.domain([start, end]);
     }
-
     //plot points
-    svg
-      .selectAll(".myDot")
-      .data(data)
-      .join("rect") // Use "rect" instead of "circle"
-      .attr("class", "myDot")
-      .attr("width", 100) // Set the desired width for the rectangles
-      .attr("height", 40) // Set the desired height for the rectangles
-      .attr("fill", "red")
-      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the rectangle
-      .attr("y", (d) => yScale(d.y));
-
-    //text on rect
-    svg
-      .selectAll(".myText")
-      .data(data)
-      .join("text")
-      .attr("class", "myText")
-      .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the rectangle
-      .attr("y", (d) => yScale(d.y) + 25)
-      .attr("stroke", "#000")
-      .text("event");
+    EventPoint({ svg, xScale, data, yScale });
 
     svg
       .append("g")
