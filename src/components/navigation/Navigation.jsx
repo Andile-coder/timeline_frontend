@@ -13,6 +13,7 @@ import { currentUser } from "../../../redux/actions/authActions";
 import { useNavigate } from "react-router-dom";
 import { timelineActions } from "../../../redux/slices/timelineSlice";
 import { createTimeline } from "../../../redux/actions/timelineActions";
+import OffCanvas from "../modals/offCanvas/OffCanvas";
 
 function Navigation() {
   const [show, setShow] = useState(false);
@@ -68,14 +69,7 @@ function Navigation() {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      <Offcanvas show={showOffCanvas} onHide={handleClose}>
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>New Event</Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body>
-          <NewEventForm />
-        </Offcanvas.Body>
-      </Offcanvas>
+      <OffCanvas />
     </Navbar>
   );
 }

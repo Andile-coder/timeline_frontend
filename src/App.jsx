@@ -13,7 +13,7 @@ import TimelineModal from "./components/modals/timelineModal/TimelineModal";
 function App() {
   const [count, setCount] = useState(0);
   const notification = useSelector((state) => state.notification.notification);
-
+  const unSavedEvents = useSelector((state) => state.events.events);
   useEffect(() => {}, [notification]);
   return (
     <>
@@ -23,7 +23,7 @@ function App() {
       <Loader />
       <TimelineModal />
       <Navigation />
-      <TimelineChart />
+      <TimelineChart eventsData={[]} unSavedEventsData={unSavedEvents} />
     </>
   );
 }

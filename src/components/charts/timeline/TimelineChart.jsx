@@ -1,57 +1,38 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   select,
-  line,
-  curveCardinal,
   scaleUtc,
   axisBottom,
   scaleLinear,
   zoom,
-  max,
   axisLeft,
-  ZoomTransform,
   zoomTransform,
 } from "d3";
-import Chooser from "../../chooser/Chooser";
-import * as d3 from "d3";
 import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
 import EventPoint from "../../eventPoint/EventPoint";
 
-const TimelineChart = ({ eventsData }) => {
+const TimelineChart = ({ eventsData, unSavedEventsData }) => {
   const ref = useRef();
   const dispatch = useDispatch();
   const [currentZoomState, setCurrentZoomState] = useState();
   const [clickedDate, setClickedDate] = useState({ x: null, y: null });
   const [coordinates, setCoordinates] = useState({ tempx: 0, tempy: 0 });
 
-  const events = useSelector((state) => state.events.events);
-
-  let data = [
-    // { x: new Date("2023-04-01"), y: 25 },
-    // { x: new Date("2023-05-01"), y: 30 },
-    {
-      x: new Date(
-        "Wed Jul 21 2023 21:30:41 GMT+0200 (South Africa Standard Time)"
-      ),
-      y: 2,
-    },
-    { x: new Date("2023-07-21T21:37"), y: 1 },
-  ];
+  let unSavedEvents = [];
+  let savedEvents = [];
   useEffect(() => {
-    if (eventsData) {
-      data = eventsData.map((event) => ({
-        x: new Date(event.event_date),
-        y: event.y_axis,
-        title: event.title,
-      }));
-    } else {
-      data = events.map((event) => ({
-        x: new Date(event.event_date),
-        y: event.y_axis,
-        title: event.title,
-      }));
-    }
+    savedEvents = eventsData.map((event) => ({
+      x: new Date(event.event_date),
+      y: event.y_axis,
+      title: event.title,
+    }));
+
+    unSavedEvents = unSavedEventsData.map((event) => ({
+      x: new Date(event.event_date),
+      y: event.y_axis,
+      title: event.title,
+    }));
   });
 
   let width = ref.current?.parentElement?.clientWidth || 2000;
@@ -116,14 +97,12 @@ const TimelineChart = ({ eventsData }) => {
 
   useEffect(() => {
     const xScale = scaleUtc()
-      .domain([new Date("2000-01-01"), new Date("2030-01-01")])
+      .domain([new Date("2000-01-01"), new Date("2070-01-01")])
       .range([0, width]);
 
     const yScale = scaleLinear()
       .domain([0, 100])
       .range([height - 10, 10]);
-
-    // max(data.map((date) => date.y))
 
     // Declare the x (horizontal position) scale.
     const svg = select(ref.current)
@@ -132,10 +111,25 @@ const TimelineChart = ({ eventsData }) => {
 
     svg.selectAll(".x-axis").remove(); // Remove existing x-axis elements after zooming
 
-    // Select all circles within the SVG and bind data to them
-    const circles = svg.selectAll("circle.myDot").data(data);
+    //plot points
+    console.log("saved", savedEvents);
 
-    circles.attr("cx", (d) => xScale(d.x)).attr("cy", (d) => yScale(d.y));
+    EventPoint({
+      svg,
+      xScale,
+      data: unSavedEvents,
+      yScale,
+      color: "gray",
+      eventType: "draft",
+    }); //unsaved events
+    EventPoint({
+      svg,
+      xScale,
+      data: savedEvents,
+      yScale,
+      color: "green",
+      eventType: "saved",
+    }); //saved events
 
     handleGraphClick(svg, ref, xScale, yScale);
 
@@ -144,9 +138,8 @@ const TimelineChart = ({ eventsData }) => {
       const [start, end] = newXScale.domain();
       xScale.domain([start, end]);
     }
-    //plot points
-    EventPoint({ svg, xScale, data, yScale });
 
+    //create x-axis
     svg
       .append("g")
       .attr("class", "x-axis") // Add a class to the x-axis group for easy removal
