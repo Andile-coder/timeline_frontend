@@ -16,20 +16,9 @@ import { createTimeline } from "../../../redux/actions/timelineActions";
 import OffCanvas from "../modals/offCanvas/OffCanvas";
 
 function Navigation({ onSave }) {
-  const userLoggedin = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const handleShow = () =>
     dispatch(offCanvasActions.showOffCanvas({ open: true }));
-
-  // const handleSave = () => {
-  //   if (!userLoggedin || userLoggedin === {}) {
-  //     navigate("/login");
-  //   } else {
-  //     dispatch(timelineActions.showModal(true));
-  //   }
-  // };
 
   useEffect(() => {
     dispatch(currentUser());
@@ -38,7 +27,7 @@ function Navigation({ onSave }) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#home">Timeline</Navbar.Brand>
+        <Navbar.Brand href="/">Timeline</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Button variant="secondary" onClick={onSave}>
           Save

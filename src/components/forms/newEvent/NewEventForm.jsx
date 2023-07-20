@@ -14,7 +14,7 @@ const NewEventForm = () => {
   const offCanvasData = useSelector((state) => state.offCanvas.data);
   const [eventForm, setEventForm] = useState(offCanvasData);
   const [categories, setCategories] = useState([]);
-  const [images, setImages] = useState(null);
+  const eventImages = [];
 
   const getCategories = async () => {
     const response = await fetch(
@@ -67,10 +67,23 @@ const NewEventForm = () => {
     console.log(tempSelectedCategories);
   };
   const handleFileChange = (event) => {
-    setImages(event.target.files[0]);
-    console.log(event.target.files);
-    setEventForm({ ...eventForm, images: event.target.file[0] });
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const base64String = reader.result.split(",")[1]; // Get the base64 string (remove the data URL prefix)
+        setEventForm({
+          ...eventForm,
+          images: [...eventForm.images, base64String],
+        });
+      };
+
+      reader.readAsDataURL(file);
+    }
   };
+
   return (
     <div className={styles.container}>
       <Form onSubmit={onSubmitDraft}>
