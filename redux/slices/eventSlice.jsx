@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   events: [],
+  event: {},
   length: 0,
   timeline_id: "",
   timeline_events: [],
@@ -24,6 +25,9 @@ const eventsSlice = createSlice({
     },
     addTimelineEvents(state, action) {
       state.timeline_events = action.payload;
+    },
+    addOneEvent(state, action) {
+      state.event = action.payload;
     },
     resetState(state = initialState, action) {
       return initialState;

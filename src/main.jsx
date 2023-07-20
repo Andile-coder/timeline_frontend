@@ -8,6 +8,7 @@ import Register from "./pages/register/Register.jsx";
 import { Provider } from "react-redux";
 import store from "../redux/index.jsx";
 import Timeline from "./pages/timeline/Timeline.jsx";
+import Event from "./pages/event/Event.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
   { path: "/my/timeline/:id", element: <Timeline /> },
+  { path: "/my/event/:id", element: <Event /> },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>

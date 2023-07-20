@@ -94,3 +94,41 @@ export const getTimelineEvents = (timeline_id) => {
     }
   };
 };
+export const getEvent = (event_id) => {
+  return async (dispatch) => {
+    const getEventHandler = async () => {
+      const token = localStorage.getItem("jwt");
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_DEV_API}api/events/${event_id}`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const eventData = await response.json();
+        dispatch(loaderActions.showLoader(false)); //disable loader
+        return eventData;
+      } else {
+        dispatch(loaderActions.showLoader(false)); //disable loader
+        dispatch(
+          notificationActions.showNotification({
+            message: "Something went wrong!!",
+            type: "error",
+            open: true,
+          })
+        );
+      }
+    };
+
+    try {
+      const response = await getEventHandler(event_id);
+      console.log("response", response);
+      dispatch(eventActions.addOneEvent(response));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+};
