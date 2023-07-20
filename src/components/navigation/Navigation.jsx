@@ -15,28 +15,21 @@ import { timelineActions } from "../../../redux/slices/timelineSlice";
 import { createTimeline } from "../../../redux/actions/timelineActions";
 import OffCanvas from "../modals/offCanvas/OffCanvas";
 
-function Navigation() {
-  const [show, setShow] = useState(false);
+function Navigation({ onSave }) {
   const userLoggedin = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const naviagate = useNavigate();
-
-  const showOffCanvas = useSelector((state) => state.offCanvas.open);
-  const handleClose = () =>
-    dispatch(offCanvasActions.showOffCanvas({ open: false }));
+  const navigate = useNavigate();
 
   const handleShow = () =>
     dispatch(offCanvasActions.showOffCanvas({ open: true }));
 
-  const handleSave = () => {
-    if (!userLoggedin || userLoggedin === {}) {
-      naviagate("/login");
-    } else {
-      //create a timeline
-      dispatch(timelineActions.showModal(true));
-      //add events to timeline
-    }
-  };
+  // const handleSave = () => {
+  //   if (!userLoggedin || userLoggedin === {}) {
+  //     navigate("/login");
+  //   } else {
+  //     dispatch(timelineActions.showModal(true));
+  //   }
+  // };
 
   useEffect(() => {
     dispatch(currentUser());
@@ -47,18 +40,17 @@ function Navigation() {
       <Container>
         <Navbar.Brand href="#home">Timeline</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Button variant="secondary" onClick={handleSave}>
+        <Button variant="secondary" onClick={onSave}>
           Save
         </Button>
 
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Button onClick={handleShow}>+ New Event</Button>
-            <Nav.Link href="#action1">Home</Nav.Link>
-            <Nav.Link href="#action2">Public Timelines</Nav.Link>
+            {/* <Nav.Link href="#action2">Public Timelines</Nav.Link>
             <Nav.Link href="#action2">Library</Nav.Link>
             <Nav.Link href="#action2">Faq</Nav.Link>
-            <Nav.Link href="#action2">Contact us</Nav.Link>
+            <Nav.Link href="#action2">Contact us</Nav.Link> */}
             <NavDropdown title="John Doe" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action4">My Timelines</NavDropdown.Item>
               <NavDropdown.Item href="#action3">Profile</NavDropdown.Item>

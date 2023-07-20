@@ -12,10 +12,9 @@ import { notificationActions } from "../../../../redux/slices/notificationSlice"
 const NewEventForm = () => {
   const dispatch = useDispatch();
   const offCanvasData = useSelector((state) => state.offCanvas.data);
-  const eventsLength = useSelector((state) => state.events.length);
-  const [spinner, setSpinner] = useState(false);
   const [eventForm, setEventForm] = useState(offCanvasData);
   const [categories, setCategories] = useState([]);
+  const [images, setImages] = useState(null);
 
   const getCategories = async () => {
     const response = await fetch(
@@ -52,7 +51,7 @@ const NewEventForm = () => {
         open: true,
       })
     );
-    //remove offcanvas data after draft
+    //remove offcanvas data after draft submission
     dispatch(offCanvasActions.resetState());
   };
 
@@ -65,8 +64,13 @@ const NewEventForm = () => {
       ...eventForm,
       category_id: tempSelectedCategories.toString(),
     });
+    console.log(tempSelectedCategories);
   };
-
+  const handleFileChange = (event) => {
+    setImages(event.target.files[0]);
+    console.log(event.target.files);
+    setEventForm({ ...eventForm, images: event.target.file[0] });
+  };
   return (
     <div className={styles.container}>
       <Form onSubmit={onSubmitDraft}>
@@ -112,6 +116,19 @@ const NewEventForm = () => {
             options={categories}
             onChange={handleTagChange}
             placeholder="Tags (Optional)"
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="event_title">
+          <Form.Label>Images</Form.Label>
+          <Form.Control
+            value={eventForm.image}
+            onChange={handleFileChange}
+            type="file"
+            accept=".png, .jpeg, .jpg"
+            name="image"
+            multiple
+            placeholder="Select Image"
           />
         </Form.Group>
 

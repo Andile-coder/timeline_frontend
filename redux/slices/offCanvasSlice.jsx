@@ -8,7 +8,7 @@ const initialState = {
     id: "",
     description: "",
     category_id: "",
-    imagesUrl: [],
+    images: [],
     timeline_id: "",
     y_axis: 20,
   },
