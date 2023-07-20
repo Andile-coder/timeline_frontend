@@ -6,13 +6,15 @@ import { timelineActions } from "../../../redux/slices/timelineSlice";
 import { getTimeline } from "../../../redux/actions/timelineActions";
 import { getTimelineEvents } from "../../../redux/actions/eventActions";
 import { useLocation } from "react-router-dom";
+import TimelineChart from "../../components/charts/timeline/TimelineChart";
 
 const Timeline = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const timeline = useSelector((state) => state.timeline.timeline);
   const events = useSelector((state) => state.events.timeline_events);
-  const timeline_id = location.state.timeline_id;
+
+  const timeline_id = location.pathname.split("/")[3];
 
   useEffect(() => {
     dispatch(getTimeline(timeline_id));
@@ -20,10 +22,9 @@ const Timeline = () => {
   }, []);
   return (
     <div>
-      <h1>Your Timeline</h1>
-      <h2>{timeline?.title}</h2>
-      <h3>{events.length}</h3>
-      {/* <>{timeline.toString()}</> */}
+      <h2>Title: {timeline?.title}</h2>
+      <h3>Number of Events: {events.length}</h3>
+      <TimelineChart eventsData={events} />
     </div>
   );
 };

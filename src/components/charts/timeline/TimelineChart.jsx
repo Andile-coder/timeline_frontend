@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { offCanvasActions } from "../../../../redux/slices/offCanvasSlice";
 import EventPoint from "../../eventPoint/EventPoint";
 
-const TimelineChart = (props) => {
+const TimelineChart = ({ eventsData }) => {
   const ref = useRef();
   const dispatch = useDispatch();
   const [currentZoomState, setCurrentZoomState] = useState();
@@ -39,13 +39,19 @@ const TimelineChart = (props) => {
     { x: new Date("2023-07-21T21:37"), y: 1 },
   ];
   useEffect(() => {
-    data = events.map((event) => ({
-      x: new Date(event.event_date),
-      y: event.y_axis,
-      title: event.title,
-    }));
-
-    console.log("data", data);
+    if (eventsData) {
+      data = eventsData.map((event) => ({
+        x: new Date(event.event_date),
+        y: event.y_axis,
+        title: event.title,
+      }));
+    } else {
+      data = events.map((event) => ({
+        x: new Date(event.event_date),
+        y: event.y_axis,
+        title: event.title,
+      }));
+    }
   });
 
   let width = ref.current?.parentElement?.clientWidth || 2000;
@@ -180,18 +186,6 @@ const TimelineChart = (props) => {
         {" "}
         {/* <rect width="100%" height="100%" /> */}
         <g className="y-axis" />
-        {/* {data.map((d, i) => {
-          console.log(d);
-          return (
-            <circle
-              key={i}
-              cx={xScale(d.x)}
-              cy={yScale(d.y)}
-              r={5}
-              fill="steelblue"
-            />
-          );
-        })} */}
       </svg>
 
       {coordinates.tempx !== 0 && coordinates.tempy !== 0 && (
@@ -210,3 +204,7 @@ const TimelineChart = (props) => {
 };
 
 export default TimelineChart;
+//18 July 2023
+//id=2023071800
+//id=2023071801
+//img=202307180100

@@ -4,7 +4,6 @@ import { notificationActions } from "../slices/notificationSlice";
 import { eventActions } from "../slices/eventSlice";
 export const createEvent = (data) => {
   return async (dispatch) => {
-    console.log("data", data);
     dispatch(loaderActions.showLoader(true)); //activate loader
     const createTimelineHandler = async () => {
       const token = localStorage.getItem("jwt");
@@ -33,8 +32,6 @@ export const createEvent = (data) => {
         return eventData;
       } else {
         dispatch(loaderActions.showLoader(false)); //disable loader
-
-        console.log(response);
         dispatch(
           notificationActions.showNotification({
             message: "Failed to create event",
