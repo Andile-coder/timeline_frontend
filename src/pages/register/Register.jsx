@@ -34,6 +34,7 @@ const Register = () => {
 
     validatePassword();
     if (validPassword) {
+      console.log("User", user);
       dispatch(registerUser(user));
     }
   };
@@ -41,7 +42,7 @@ const Register = () => {
     if (notification?.type == "success") {
       navigate("/login");
     }
-  }, [notification, navigate]);
+  }, [notification]);
   return (
     <div>
       {notification && (

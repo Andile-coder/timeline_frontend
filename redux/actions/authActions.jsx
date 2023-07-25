@@ -58,6 +58,7 @@ export const registerUser = (user) => {
           body: JSON.stringify(user),
         }
       );
+
       if (response.ok) {
         const userData = await response.json();
         dispatch(
