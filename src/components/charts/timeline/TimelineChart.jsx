@@ -22,11 +22,29 @@ const TimelineChart = ({ eventsData, unSavedEventsData }) => {
   let unSavedEvents = [];
   let savedEvents = [];
   useEffect(() => {
-    savedEvents = eventsData.map((event) => ({
-      x: new Date(event.event_date),
-      y: event.y_axis,
-      title: event.title,
-    }));
+    //check how many events in each day and adjust y_axis
+
+    let eventsLength = {};
+    eventsData.forEach((event) => {
+      eventsLength = {
+        ...eventsLength,
+        [event.event_date]: {
+          max: eventsData.filter((e) => e.event_date === event.event_date)
+            .length,
+          count: 0,
+        },
+      };
+    });
+
+    savedEvents = eventsData.map((event, index) => {
+      const newEvent = {
+        x: new Date(event.event_date),
+        y: 20 + eventsLength[`${event.event_date}`].count * 10,
+        title: event.title,
+      };
+      eventsLength[`${event.event_date}`].count++;
+      return newEvent;
+    });
 
     unSavedEvents = unSavedEventsData.map((event) => ({
       x: new Date(event.event_date),
@@ -114,6 +132,13 @@ const TimelineChart = ({ eventsData, unSavedEventsData }) => {
     //plot points
     console.log("saved", savedEvents);
 
+    handleGraphClick(svg, ref, xScale, yScale);
+
+    if (currentZoomState) {
+      const newXScale = currentZoomState.rescaleX(xScale);
+      const [start, end] = newXScale.domain();
+      xScale.domain([start, end]);
+    }
     EventPoint({
       svg,
       xScale,
@@ -130,15 +155,6 @@ const TimelineChart = ({ eventsData, unSavedEventsData }) => {
       color: "green",
       eventType: "saved",
     }); //saved events
-
-    handleGraphClick(svg, ref, xScale, yScale);
-
-    if (currentZoomState) {
-      const newXScale = currentZoomState.rescaleX(xScale);
-      const [start, end] = newXScale.domain();
-      xScale.domain([start, end]);
-    }
-
     //create x-axis
     svg
       .append("g")
@@ -201,3 +217,10 @@ export default TimelineChart;
 //id=2023071800
 //id=2023071801
 //img=202307180100
+
+//registered user should update timeline with events
+//registered user can only edit their own events
+//unregistered user can only view approved events
+//admin can approve events, view all events, update event status
+//allow admin to filter by status
+//once approved by admin then registered user cannot edit

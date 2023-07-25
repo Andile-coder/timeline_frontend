@@ -1,6 +1,9 @@
 import React from "react";
 
 const EventPoint = ({ svg, xScale, yScale, data, color, eventType }) => {
+  const onEventPointClick = (e) => {
+    console.log("clicked", e);
+  };
   // Select all circles within the SVG and bind data to them
   const circles = svg.selectAll(`circle.${eventType}`).data(data);
 
@@ -14,7 +17,10 @@ const EventPoint = ({ svg, xScale, yScale, data, color, eventType }) => {
     .attr("height", 40) // Set the desired height for the rectangles
     .attr("fill", color)
     .attr("x", (d) => xScale(d.x)) // Adjust the x position to center the rectangle
-    .attr("y", (d) => yScale(d.y));
+    .attr("y", (d) => yScale(d.y))
+    .attr("cursor", "pointer")
+    .on("click", (e) => onEventPointClick(e));
+
   svg
     .selectAll(`.${eventType}Text`)
     .data(data)
